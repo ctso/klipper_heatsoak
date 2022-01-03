@@ -1,7 +1,8 @@
 # Klipper Heatsoak Plugin
 
 A Klipper plugin that heatsoaks your bed until the rate of temperature increase is below a
-defined threshold.
+defined threshold.  The heatsoak can be canceled, which is often complicated to implement in
+pure G-Code.
 
 This is intended to be used with a temperature sensor embedded in the perimeter of the bed.
 
@@ -27,6 +28,8 @@ install_script: install.sh
 ```
 
 ## Configuration
+Make sure you have `virtual_sdcard` enabled!
+
 ```py
 [heatsoak]
 #rate_target:
