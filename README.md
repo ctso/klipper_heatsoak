@@ -13,7 +13,7 @@ or [MainsailOS](https://github.com/mainsail-crew/MainsailOS).
 ```bash
 cd /home/pi
 git clone https://github.com/ctso/klipper_heatsoak
-ln -sf /home/pi/klipper_heatsoak/heatsoak.py /home/klipper/
+ln -sf /home/pi/klipper_heatsoak/heatsoak.py /home/klipper/klippy/extras/heatsoak.py
 ```
 
 Configure Moonraker's update manager by adding the following to `moonraker.conf`:
