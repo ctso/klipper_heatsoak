@@ -1,4 +1,4 @@
-import math
+import time
 
 SLEEP_TIME = 5.0
 
@@ -10,6 +10,8 @@ class Heatsoak:
         
         self.rate_target = config.getfloat('rate_target', default=0.25, above=0.)
         self.sensor_name = config.get('temp_sensor')
+        self.duration_min = config.getfloat('min_seconds', default=30., above=0.)
+        self.duration_max = config.getfloat('max_seconds', default=1800., above=0.)
 
         self.gcode.register_command('HEATSOAK_BED', self.cmd_HEATSOAK_BED,
                                     desc=self.cmd_HEATSOAK_BED_help)
@@ -44,6 +46,7 @@ class Heatsoak:
     def handle_timer(self, eventtime):
         temp_current = self._get_current_temperature(eventtime)
 
+        duration_current = time.time() - self.start_time
         rate_current = abs((temp_current - self.temp_last) / (SLEEP_TIME / 60.0))
         self.temp_last = temp_current
         
@@ -52,8 +55,14 @@ class Heatsoak:
         self.rates = self.rates[-12:]
         rate_mean = sum(self.rates) / len(self.rates)
 
-        self.gcode.respond_info("Heatsoaking... rate_current=%.2f, rate_mean=%.2f, target=%.2f" % (rate_current, rate_mean, self.rate_target))
-        if rate_mean <= self.rate_target:
+        self.gcode.respond_info("Heatsoaking... rate_current=%.2f, rate_mean=%.2f, target=%.2f, duration=%d" % (rate_current, rate_mean, self.rate_target, duration_current))
+
+        # Handle minimum duration
+        if duration_current < self.duration_min:
+            return eventtime + SLEEP_TIME
+        
+        # Handle reaching target or max duration
+        if rate_mean <= self.rate_target or duration_current >= self.duration_max:
             self.gcode.respond_info("Heatsoak complete")
             self._reset_state()
             self.v_sd.do_resume()
@@ -67,6 +76,7 @@ class Heatsoak:
         self.timer = None 
         self.heatsoaking = False
         self.temp_last = 0
+        self.start_time = 0
         self.rates = []
 
     cmd_HEATSOAK_BED_help = "Heatsoak the bed"
@@ -75,6 +85,7 @@ class Heatsoak:
             self.v_sd.do_pause()
             self.gcode.respond_info("Heatsoak starting")
             self.heatsoaking = True
+            self.start_time = time.time()
             self.timer = self.reactor.register_timer(self.handle_timer, self.reactor.monotonic() + 0.1)
         else:
             self.gcode.respond_info("Already heatsoaking, skipping")

@@ -40,6 +40,11 @@ temp_sensor:
 #    without quotes, for example temperature_sensor in_bed.  You may also specify
 #    heater_bed here to use the bed's temperature sensor, however it is recommended
 #    to use a sensor embedded in the bed.
+#min_seconds:
+#    The minimum amount of time, in seconds, to heatsoak.  Defaults to 30.
+#max_seconds:
+#    The maximum amount of time, in seconds, to heatsoak.  Defaults to 1800 (30 minutes).
+#    Make sure your idle_timeout is larger than this maximum.
 ```
 
 ## Usage
