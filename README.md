@@ -1,5 +1,8 @@
 # Klipper Heatsoak Plugin
 
+**WARNING**: Turns out this isn't working at the moment, as this is one big hack
+around pausing the sdcard in order to make a cancelable heatsoak g-code command.  Stay tuned!
+
 A Klipper plugin that heatsoaks your bed until the rate of temperature increase is below a
 defined threshold.  The heatsoak can be canceled, which is often complicated to implement in
 pure G-Code.
