@@ -27,13 +27,22 @@ class Heatsoak:
         except self.printer.config_error:
             raise self.printer.config_error("Must enable virtual_sdcard in configuration")
 
-        try:
-            self.sensor = self.printer.lookup_object(self.sensor_name)
-        except self.printer.config_error:
-            raise self.printer.config_error("Unable to locate sensor named '%s'" % self.sensor_name)
+        if self.sensor_name == 'heater_bed':
+            self.heater_bed = self.printer.lookup_object('heater_bed')
+        else:
+            try:
+                self.sensor = self.printer.lookup_object(self.sensor_name)
+            except self.printer.config_error:
+                raise self.printer.config_error("Unable to locate sensor named '%s'" % self.sensor_name)
+
+    def _get_current_temperature(self, eventtime):
+        if self.sensor_name == 'heater_bed':
+            return self.heater_bed.get_status(eventtime)['temperature']
+        else:
+            return self.sensor.get_temp(eventtime)[0]
     
     def handle_timer(self, eventtime):
-        temp_current, _ = self.sensor.get_temp(eventtime)
+        temp_current = self._get_current_temperature(eventtime)
 
         rate_current = abs((temp_current - self.temp_last) / (SLEEP_TIME / 60.0))
         self.temp_last = temp_current

@@ -34,7 +34,9 @@ install_script: install.sh
 #    A value that is too low here is unlikely to converge.  Defaults to 0.25 degrees/min.
 temp_sensor:
 #    The name of the temperature sensor to use.  Use the full configuration section name
-#    without quotes, for example temperature_sensor in_bed 
+#    without quotes, for example temperature_sensor in_bed.  You may also specify
+#    heater_bed here to use the bed's temperature sensor, however it is recommended
+#    to use a sensor embedded in the bed.
 ```
 
 ## Usage
